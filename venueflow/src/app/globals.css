@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", var(--font-sans);
+  
+  --color-brand-cyan: #00e5ff;
+  --color-brand-purple: #7000ff;
+  --color-brand-orange: #ff3d00;
+  
+  --color-bg-dark: #0a0d14;
+  --color-bg-card: rgba(20, 25, 40, 0.6);
+  --color-border-glass: rgba(255, 255, 255, 0.08);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg-dark);
+    color: #ffffff;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: var(--color-bg-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--color-border-glass);
+    border-radius: 1rem;
+  }
+
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+  }
+}
+
+/* Background floating glow effects */
+.glow-bg-1 {
+  position: fixed;
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(112,0,255,0.15) 0%, rgba(10,13,20,0) 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.glow-bg-2 {
+  position: fixed;
+  bottom: -10%;
+  right: -10%;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, rgba(0,229,255,0.1) 0%, rgba(10,13,20,0) 70%);
+  z-index: -1;
+  pointer-events: none;
+}

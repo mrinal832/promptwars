@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  name               String
+  role               String   // "attendee" | "admin" | "security"
+  seatSection        String?
+  favoriteFacilities String?  // JSON string
+  preferences        String?  // JSON string
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model VenueZone {
+  id               String   @id @default(cuid())
+  name             String
+  type             String   // "gate", "seating", "food", "restroom", "merch", "exit", "parking", "medical"
+  coordinates      String?  // JSON string of {x, y} for map
+  currentDensity   Int      @default(0) // 0-100% capacity filled
+  status           String   @default("normal") // "normal", "congested", "restricted", "closed"
+  waitTimes        WaitTime[]
+  incidents        Incident[]
+  routesFrom       Route[]  @relation("RouteFrom")
+  routesTo         Route[]  @relation("RouteTo")
+}
+
+model WaitTime {
+  id                   String   @id @default(cuid())
+  zoneId               String
+  venueZone            VenueZone @relation(fields: [zoneId], references: [id])
+  estimatedWaitMinutes Int
+  lastUpdated          DateTime @default(now())
+}
+
+model Alert {
+  id          String   @id @default(cuid())
+  type        String   // "gate_change", "congestion", "safety", "announcement"
+  title       String
+  message     String
+  targetZone  String?  // Could be "*" for all or specific zone ID
+  severity    String   // "info", "warning", "critical"
+  timestamp   DateTime @default(now())
+}
+
+model Incident {
+  id           String   @id @default(cuid())
+  zoneId       String
+  venueZone    VenueZone @relation(fields: [zoneId], references: [id])
+  incidentType String   // "spill", "fight", "medical", "blocked_gate"
+  status       String   // "open", "in-progress", "resolved"
+  assignedStaff String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Route {
+  id             String   @id @default(cuid())
+  fromZoneId     String
+  toZoneId       String
+  fromZone       VenueZone @relation("RouteFrom", fields: [fromZoneId], references: [id])
+  toZone         VenueZone @relation("RouteTo", fields: [toZoneId], references: [id])
+  crowdScore     Int      // 0-100 indicating congestion
+  distance       Int      // in meters
+  estimatedTime  Int      // in seconds
+}
